@@ -53,9 +53,15 @@
     group: nexus
     mode: 0755
 
+- name: install requirements for maven_artifact
+  package:
+    name: python-lxml
+
 - name: Copy jarfile missing on nexus bundle ...
-  copy:
-    src: commons-compress-1.16.1.jar
+  maven_artifact:
+    group_id: org.apache.commons
+    artifact_id: commons-compress
+    version: '1.16.1'
     dest: '{{ nexus_installation_dir }}/nexus-{{ nexus_version }}/system/org/apache/commons/commons-compress/1.16.1/commons-compress-1.16.1.jar'
     owner: nexus
     group: nexus
