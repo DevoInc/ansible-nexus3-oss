@@ -60,6 +60,24 @@
     owner: nexus
     group: nexus
 
+- name: Create destination directory for missing jarfile ...
+  file:
+    path: "{{ nexus_data_dir }}/restore-from-backup"
+    state: directory
+    owner: nexus
+    group: nexus
+    mode: 0755
+  when: nexus_backup_file is defined
+
+- name: Recover backup
+  become: true
+  become_user: nexus
+  unarchive:
+    creates: "{{ nexus_data_dir }}/db/config"
+    src: "{{ nexus_backup_file }}"
+    dest: "{{ nexus_data_dir }}/restore-from-backup"
+  when: nexus_backup_file is defined
+
 - name: Delete unpacked data directory
   file:
     path: "{{ nexus_installation_dir }}/nexus-latest/data"
