@@ -45,6 +45,21 @@
     state: link
   register: nexus_latest_version
 
+- name: Create destination directory for missing jarfile ...
+  file:
+    path: '{{ nexus_installation_dir }}/nexus-{{ nexus_version }}/system/org/apache/commons/commons-compress/1.16.1'
+    state: directory
+    owner: nexus
+    group: nexus
+    mode: 0755
+
+- name: Copy jarfile missing on nexus bundle ...
+  copy:
+    src: commons-compress-1.16.1.jar
+    dest: '{{ nexus_installation_dir }}/nexus-{{ nexus_version }}/system/org/apache/commons/commons-compress/1.16.1/commons-compress-1.16.1.jar'
+    owner: nexus
+    group: nexus
+
 - name: Delete unpacked data directory
   file:
     path: "{{ nexus_installation_dir }}/nexus-latest/data"
