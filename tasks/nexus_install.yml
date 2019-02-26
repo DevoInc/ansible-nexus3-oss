@@ -45,6 +45,45 @@
     state: link
   register: nexus_latest_version
 
+- name: Create destination directory for missing jarfile ...
+  file:
+    path: '{{ nexus_installation_dir }}/nexus-{{ nexus_version }}/system/org/apache/commons/commons-compress/1.16.1'
+    state: directory
+    owner: nexus
+    group: nexus
+    mode: 0755
+
+- name: install requirements for maven_artifact
+  package:
+    name: python-lxml
+
+- name: Copy jarfile missing on nexus bundle ...
+  maven_artifact:
+    group_id: org.apache.commons
+    artifact_id: commons-compress
+    version: '1.16.1'
+    dest: '{{ nexus_installation_dir }}/nexus-{{ nexus_version }}/system/org/apache/commons/commons-compress/1.16.1/commons-compress-1.16.1.jar'
+    owner: nexus
+    group: nexus
+
+- name: Create destination directory for missing jarfile ...
+  file:
+    path: "{{ nexus_data_dir }}/restore-from-backup"
+    state: directory
+    owner: nexus
+    group: nexus
+    mode: 0755
+  when: nexus_backup_file is defined
+
+- name: Recover backup
+  become: true
+  become_user: nexus
+  unarchive:
+    creates: "{{ nexus_data_dir }}/db/config"
+    src: "{{ nexus_backup_file }}"
+    dest: "{{ nexus_data_dir }}/restore-from-backup"
+  when: nexus_backup_file is defined
+
 - name: Delete unpacked data directory
   file:
     path: "{{ nexus_installation_dir }}/nexus-latest/data"
